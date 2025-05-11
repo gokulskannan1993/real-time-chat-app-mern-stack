@@ -1,6 +1,59 @@
-export const signup = (req, res) => {
-  // Handle user signup logic here
-  res.status(201).json({ message: "User signed up successfully" });
+import { generateAndSetToken } from "../lib/utils.js";
+import User from "../models/user.model.js";
+import bcrypt from "bcryptjs";
+
+export const signup = async (req, res) => {
+  const { name, email, password } = req.body;
+  try {
+    // Validate user input
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Check if password length is valid
+    if (password.length < 6) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
+    }
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Check if email is valid
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    // Create new user
+    const newUser = new User({
+      name: name,
+      email: email,
+      password: hashedPassword,
+    });
+
+    if (newUser) {
+      generateAndSetToken(newUser._id, res);
+      await newUser.save();
+      res.status(201).json({
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        profilePicture: newUser.profilePicture,
+      });
+    } else {
+      return res.status(400).json({ message: "User creation failed" });
+    }
+  } catch (error) {
+    console.error("Error during signup:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 export const login = (req, res) => {
