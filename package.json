@@ -2,10 +2,9 @@
   "name": "real-time-chat-app-mern-stack",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "api/src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon backend/index.js"
+    "dev": "nodemon api/src/server.js"
   },
   "keywords": [],
   "author": "",
