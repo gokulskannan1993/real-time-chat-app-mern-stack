@@ -2,6 +2,10 @@ import { generateAndSetToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 
+// Signup function
+// This function handles user registration by validating input,
+// checking for existing users, hashing the password, and creating a new user
+// It also generates a JWT token and sets it in the response cookie
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -56,12 +60,48 @@ export const signup = async (req, res) => {
   }
 };
 
-export const login = (req, res) => {
-  // Handle user login logic here
-  res.status(200).json({ message: "User logged in successfully" });
+// Login function
+// This function handles user login by checking the provided credentials
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
+
+    // Check if password is correct
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
+
+    // Generate and set token
+    generateAndSetToken(user._id, res);
+
+    // Return user data without password
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      profilePicture: user.profilePicture,
+    });
+  } catch (error) {
+    console.error("Error during login:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 
+// Logout function
+// This function handles user logout by clearing the JWT cookie
+// and returning a success message
 export const logout = (req, res) => {
-  // Handle user logout logic here
-  res.status(200).json({ message: "User logged out successfully" });
+  // Clear the JWT cookie
+  try {
+    res.clearCookie("jwt");
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Error during logout:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
