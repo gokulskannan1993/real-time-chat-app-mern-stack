@@ -4,9 +4,6 @@ import bcrypt from "bcryptjs";
 import cloudinary from "../lib/cloudinary.js";
 
 // Signup function
-// This function handles user registration by validating input,
-// checking for existing users, hashing the password, and creating a new user
-// It also generates a JWT token and sets it in the response cookie
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -62,7 +59,6 @@ export const signup = async (req, res) => {
 };
 
 // Login function
-// This function handles user login by checking the provided credentials
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -94,8 +90,6 @@ export const login = async (req, res) => {
 };
 
 // Logout function
-// This function handles user logout by clearing the JWT cookie
-// and returning a success message
 export const logout = (req, res) => {
   // Clear the JWT cookie
   try {
@@ -108,9 +102,8 @@ export const logout = (req, res) => {
 };
 
 // Update profile function
-// This function handles updating the user's profile picture
-// It validates the input, uploads the new picture to Cloudinary,
-// and updates the user's profile in the database
+// This function updates the user's profile picture
+// It uses Cloudinary to upload the image and updates the user's profile
 export const updateProfile = async (req, res) => {
   try {
     const { profilePicture } = req.body;
@@ -129,6 +122,18 @@ export const updateProfile = async (req, res) => {
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Error during profile update:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Check authentication function
+// This function checks if the user is authenticated and returns user data
+// without the password
+export const checkAuth = async (req, res) => {
+  try {
+    res.status(200).json(req.user);
+  } catch (error) {
+    console.error("Error during authentication check:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
