@@ -1,6 +1,7 @@
 import { generateAndSetToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import cloudinary from "../lib/cloudinary.js";
 
 // Signup function
 // This function handles user registration by validating input,
@@ -102,6 +103,32 @@ export const logout = (req, res) => {
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.error("Error during logout:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Update profile function
+// This function handles updating the user's profile picture
+// It validates the input, uploads the new picture to Cloudinary,
+// and updates the user's profile in the database
+export const updateProfile = async (req, res) => {
+  try {
+    const { profilePicture } = req.body;
+    const userId = req.user._id;
+    if (!profilePicture) {
+      return res.status(400).json({ message: "Profile picture is required" });
+    }
+
+    const uploadResponse = await cloudinary.uploader.upload(profilePicture);
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePicture: uploadResponse.secure_url },
+      { new: true }
+    );
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Error during profile update:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
