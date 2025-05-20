@@ -6,8 +6,16 @@ const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const handleUpdateProfile = async (data) => {
-    await updateProfile(data);
+  const handleUpdateProfile = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      const base64Image = reader.result;
+      setSelectedImage(base64Image);
+      await updateProfile({ profilePicture: base64Image });
+    };
   };
 
   return (
@@ -58,7 +66,7 @@ const ProfilePage = () => {
                 : "Click the camera icon to update your photo"}
             </p>
           </div>
-
+          {/* {user information} */}
           <div className="space-y-6">
             <div className="space-y-1.5">
               <div className="text-sm text-zinc-400 flex items-center gap-2">
