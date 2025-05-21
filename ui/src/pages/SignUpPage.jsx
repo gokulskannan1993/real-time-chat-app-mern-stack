@@ -14,8 +14,10 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const SignUpPage = () => {
+  // State to manage password visibility
   const [showPassword, setShowPassword] = useState(false);
 
+  // State to store form data
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,6 +27,7 @@ const SignUpPage = () => {
   const { signup, isSigningUp } = useAuthStore();
 
   const validateForm = () => {
+    // Validation checks for form fields
     if (!formData.name.trim()) return toast.error("Full name is required");
     if (!formData.email.trim()) return toast.error("Email is required");
     if (!/\S+@\S+\.\S+/.test(formData.email))
@@ -38,12 +41,14 @@ const SignUpPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    // Validate form before submission
     const success = validateForm();
 
+    // If validation is successful, call the signup function
     if (success === true) signup(formData);
   };
 
+  // Render the signup page
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* {Left Side} */}
@@ -77,7 +82,7 @@ const SignUpPage = () => {
                   type="text"
                   className={`input input-bordered w-full pl-10`}
                   placeholder="John Doe"
-                  value={formData.name}
+                  value={formData.name} // Bind input value to state
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
@@ -98,7 +103,7 @@ const SignUpPage = () => {
                   type="email"
                   className={`input input-bordered w-full pl-10`}
                   placeholder="you@example.com"
-                  value={formData.email}
+                  value={formData.email} // Bind input value to state
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
@@ -118,7 +123,7 @@ const SignUpPage = () => {
                   type={showPassword ? "text" : "password"}
                   className={`input input-bordered w-full pl-10`}
                   placeholder="••••••••"
-                  value={formData.password}
+                  value={formData.password} // Bind input value to state
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
@@ -141,7 +146,7 @@ const SignUpPage = () => {
             <button
               type="submit"
               className="btn btn-primary w-full"
-              disabled={isSigningUp}
+              disabled={isSigningUp} // Disable button while signing up
             >
               {isSigningUp ? (
                 <>
@@ -158,7 +163,7 @@ const SignUpPage = () => {
 
           <div className="text-center">
             <p className="text-base-content/60">
-              Already have an account?{" "}
+              Already have an account?{" "} {/* Link to login page */}
               <Link to="/login" className="link link-primary ">
                 Sign in
               </Link>
