@@ -5,19 +5,24 @@ import { Camera, Mail, User } from "lucide-react";
 const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImage, setSelectedImage] = useState(null);
-
+  
+  // Function to handle profile update when a new image is selected
   const handleUpdateProfile = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    
+    // Use FileReader to read the selected file as a data URL (base64 string)
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = async () => {
       const base64Image = reader.result;
+      // Update the local state with the new image
       setSelectedImage(base64Image);
+      // Call the updateProfile function from the store to update the profile picture on the server
       await updateProfile({ profilePicture: base64Image });
     };
   };
-
+  
   return (
     <div className="h-screen pt-20">
       <div className="max-w-2xl mx-auto p4 py-8">
@@ -26,7 +31,7 @@ const ProfilePage = () => {
             <h1 className="text-2xl font-semibold">Profile</h1>
             <p className="mt-2">Manage your profile information</p>
           </div>
-
+          
           {/* {avatar upload} */}
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
@@ -37,6 +42,7 @@ const ProfilePage = () => {
                 alt="Profile"
                 className="size-32 rounded-full object-cover border-4 "
               />
+              {/* Label for the file input, styled as a camera icon */}
               <label
                 htmlFor="avatar-upload"
                 className={`
@@ -49,6 +55,7 @@ const ProfilePage = () => {
                   }
                 `}
               >
+                {/* Camera icon */}
                 <Camera className="w-5 h-5 text-base-200" />
                 <input
                   type="file"
@@ -60,6 +67,7 @@ const ProfilePage = () => {
                 />
               </label>
             </div>
+            {/* Display upload status or instructions */}
             <p className="text-sm text-zinc-400">
               {isUpdatingProfile
                 ? "Uploading..."
@@ -67,7 +75,7 @@ const ProfilePage = () => {
             </p>
           </div>
           {/* {user information} */}
-          <div className="space-y-6">
+          <div className="space-y-6"> {/* Container for user information */}
             <div className="space-y-1.5">
               <div className="text-sm text-zinc-400 flex items-center gap-2">
                 <User className="w-4 h-4" />
@@ -88,7 +96,7 @@ const ProfilePage = () => {
               </p>
             </div>
           </div>
-
+          
           <div className="mt-6 bg-base-300 rounded-xl p-6">
             <h2 className="text-lg font-medium  mb-4">Account Information</h2>
             <div className="space-y-3 text-sm">
@@ -105,7 +113,7 @@ const ProfilePage = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-export default ProfilePage;
+    );
+  };
+  
+  export default ProfilePage;
