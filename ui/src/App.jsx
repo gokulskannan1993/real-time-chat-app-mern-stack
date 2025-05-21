@@ -20,8 +20,7 @@ function App() {
   }, [checkAuth]);
 
   if (isCheckingAuth && !authUser) {
-    // Show a loading spinner while checking authentication
-    // and no user is authenticated
+    // Render a loading spinner while authentication status is being checked
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader className="size-10 animate-spin" />
@@ -30,27 +29,34 @@ function App() {
   }
 
   return (
+    // Apply the current theme to the application
     <div data-theme={theme}>
       <Navbar />
       <Routes>
         <Route
           path="/"
+          // If the user is authenticated, render the HomePage, otherwise redirect to the login page
           element={authUser ? <HomePage /> : <Navigate to="/login" />}
         />
         <Route
           path="/signup"
+          // If the user is authenticated, redirect to the home page, otherwise render the SignUpPage
           element={authUser ? <Navigate to="/" /> : <SignUpPage />}
         />
         <Route
           path="/login"
+          // If the user is authenticated, redirect to the home page, otherwise render the LoginPage
           element={authUser ? <Navigate to="/" /> : <LoginPage />}
         />
         <Route path="/settings" element={<SettingsPage />} />
         <Route
           path="/profile"
+          // If the user is authenticated, render the ProfilePage, otherwise redirect to the login page
           element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
         />
       </Routes>
+
+      {/* Display toast notifications */}
       <Toaster />
     </div>
   );
